@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script> 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  
+  <style>
+    html{
+		height: 100%;
+	}		
+	body {
+		overflow: hidden;
+		height: 100%;
+		background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNPqWh6CAQagaWoQo4Up6c5sojinJyYNCDA&usqp=CAU');
+		  background-repeat: no-repeat;
+		  background-attachment: fixed;
+		  background-size: cover;
+	}
+	.container {
+		height:90%;
+		width:90%;
+		border-radius: 25px;
+	}
+	.panel {
+		height:90%;
+	}
+  	.panel-body {
+      overflow-y: auto;
+	  height: 95%;
+	}
+	
+	div.gallery {
+	  margin: 5px;
+	  border: 2px solid #ccc;
+	  float: left;
+	  background-color:#e9ebf0;
+	  border-radius: 15px;
+	  width: 180px;
+	  height: 180px;
+	}
+
+	div.gallery:hover {
+	  border: 2px solid red;
+	  border-radius: 15px;
+	}
+
+	div.gallery img {
+	  width: 100%;
+	  height:87%;
+	  border-radius: 15px;
+	}
+
+	div.desc {
+	  padding: 5px;
+	  background-color:#lightgray;
+	  text-align: center;
+	}
+  </style>
+  <script>
+	var app = angular.module("myApp", []);
+	app.controller("myController", function($scope) {
+		$scope.newPhotoName = "";
+		$scope.newPhotoSrc = "";
+		$scope.filterText = '';
+		$scope.sortDirection = true;
+		$scope.PhotoRepo = [
+			{ Name : 'Nature-1', Time: new Date(2021, 0, 30, 22, 20, 0, 0), URL : 'https://m.economictimes.com/thumb/height-450,width-600,imgsize-1016106,msid-68721417/nature1_gettyimages.jpg'},
+			{ Name : 'Nature-2', Time: new Date(2021, 0, 20, 20, 0, 0, 0), URL : 'https://images.pexels.com/photos/2440061/pexels-photo-2440061.jpeg'},
+			{ Name : 'Nature-3', Time: new Date(2021, 0, 25, 22, 0, 0, 0), URL : 'https://isha.sadhguru.org/blog/wp-content/uploads/2016/05/natures-temples.jpg'},
+			{ Name : 'Nature-5', Time: new Date(2021, 0, 25, 05, 0, 0, 0), URL : 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg'}
+		];
+		$scope.btnAddNewPhotoClick = function(name, url){			
+			if(!name && !url) 
+				alert('Please enter new Image Name and URL');
+			else if(!name)
+				alert('Please enter name');
+			else if(!url)
+				alert('Please enter URL');
+			else {
+				$scope.PhotoRepo.push({Name: name, Time: new Date(), URL : url});
+				alert('Added '+$scope.newPhotoName+' to the gallery');
+				$scope.newPhotoName = "";
+				$scope.newPhotoSrc = "";
+			}
+		}
+		$scope.btnRemovePhotoClick = function(photo) {
+			var res = confirm("Photo ("+photo.Name+") will be removed from Gallery");
+			if(res == true) {
+				var i = $scope.PhotoRepo.indexOf(photo);
+				$scope.PhotoRepo.splice(i,1);
+			}
+		}
+	});
+  </script>
+</head>
+<body ng-app="myApp" ng-controller="myController"> 
+<center><h3><b>Photo Gallery</b></h3></center>
+
+<div class="container">
+	<div >
+		<span><b>Add new photo</b></span><br>
+		<input type="text" placeholder="Name" ng-model="newPhotoName"></input>
+		<input type="text" placeholder="Image URL" ng-model="newPhotoSrc"></input>
+		<button ng-click="btnAddNewPhotoClick(newPhotoName, newPhotoSrc)">Add</button>
+		
+		<div style="float:right;">
+			<b>Search:</b><input type="text" placeholder="Search images" ng-model="filterText"></input>
+			<span>&emsp;&emsp;<b>Sort by Time:</b></span>			
+			<input type="radio" name="sortByTime" ng-model="sortDirection" ng-value="true">Latest</input>
+			<input type="radio" name="sortByTime" ng-model="sortDirection" ng-value="false">Oldest</input>
+		</div>
+	</div>
+	
+  <div class="panel panel-default">
+    <div id="galleryBody" class="panel-body"  >
+		<div ng-repeat="photo in PhotoRepo|orderBy:'Time':sortDirection|filter:{Name:filterText}:false" class="gallery">
+			<a target="_blank" ng-href="{{photo.URL}}">
+				<img ng-src="{{photo.URL}}" ></img>
+			</a>
+		<div class="desc">
+			<button type="button" ng-click="btnRemovePhotoClick(photo)" class="close" aria-label="Close" style="text-align:top;float:top;">
+			  <span data-toggle="tooltip" title="Remove"  style="text-align:top;float:top;">&times;</span>
+			</button>
+			{{photo.Name}}
+		</div>
+	</div>
+   </div>
+  </div>
+</div>
+
+</body>
+</html>
